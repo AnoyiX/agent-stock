@@ -2,28 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.baidu import get_stock_with_prefix, test_a_code, test_hk_code
-from ..api.qq import arr2obj, fetch_quote_json
-
-
-def get_query_code(symbol: str) -> str:
-    lower = symbol.lower()
-    if lower.startswith("us"):
-        return lower.split(".")[0]
-    if test_a_code(lower):
-        return get_stock_with_prefix(lower)
-    if test_hk_code(lower):
-        return f"hk{lower}"
-    return lower
-
-
-def get_stock_by_code(symbol: str) -> dict:
-    query_code = get_query_code(symbol)
-    payload = fetch_quote_json(query_code)
-    arr = payload.get(query_code)
-    if not isinstance(arr, list) or len(arr) < 2:
-        raise click.ClickException("无效股票代码或暂无行情数据")
-    return arr2obj(arr)
+from ..api.qq import get_query_code, get_stock_by_code, get_stock_by_query
 
 
 def format_quote_markdown(quote: dict) -> str:
@@ -31,7 +10,7 @@ def format_quote_markdown(quote: dict) -> str:
         [
             f"- 代码: {quote['code']}",
             f"- 名称: {quote['name']}",
-            f"- 当前价格: {quote['price']}",
+            f"- 价格: {quote['price']}",
             f"- 涨跌幅: {quote['change_rate']}",
             f"- 昨收价: {quote['previous_close']}",
             f"- 开盘价: {quote['open']}",
@@ -48,10 +27,48 @@ def format_quote_markdown(quote: dict) -> str:
     )
 
 
+def format_quotes_markdown(quotes: list[dict]) -> str:
+    lines = []
+    for quote in quotes:
+        lines.append(
+            ",".join(
+                [
+                    quote["code"],
+                    quote["name"],
+                    quote["price"],
+                    quote["change_rate"],
+                    quote["previous_close"],
+                    quote["open"],
+                    quote["high"],
+                    quote["low"],
+                    quote["market_value"],
+                    quote["circulating_value"],
+                    quote["pe"],
+                    quote["pb"],
+                    quote["volume"],
+                    quote["vr"],
+                    quote["turnover_rate"],
+                ]
+            )
+        )
+    return "\n".join(
+        [
+            "```csv",
+            "代码,名称,价格,涨跌幅,昨收价,开盘价,最高价,最低价,总市值,流通市值,市盈率,市净率,成交量,量比,换手率",
+            *lines,
+            "```",
+        ]
+    )
+
+
 @click.command(name="quote")
 @click.argument("symbol")
 def quote(symbol: str):
-    """个股实时行情"""
-    data = get_stock_by_code(symbol)
-    click.echo(format_quote_markdown(data))
-
+    """个股实时行情（支持批量查询）"""
+    if ',' in symbol:
+        query = ','.join([get_query_code(s) for s in symbol.split(",")])
+        data = get_stock_by_query(query)
+        click.echo(format_quotes_markdown(data))
+    else:
+        data = get_stock_by_code(symbol)
+        click.echo(format_quote_markdown(data))

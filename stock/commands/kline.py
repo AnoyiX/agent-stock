@@ -4,8 +4,7 @@ from dataclasses import dataclass
 
 import click
 
-from ..api.qq import fetch_kline_payload
-from .quote import get_query_code
+from ..api.qq import fetch_kline_payload, get_query_code
 
 
 @dataclass

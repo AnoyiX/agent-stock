@@ -55,8 +55,6 @@ def format_heatmap_markdown(data: dict) -> str:
         lines.append(",".join(parts))
     return "\n".join(
         [
-            "## 行业板块热力图",
-            "",
             "```csv",
             "行业板块,总市值,成交额,涨跌幅",
             *lines,

@@ -185,11 +185,11 @@ def to_simple_code(symbol: str) -> str:
     return symbol
 
 
-def test_a_code(code: str) -> bool:
+def is_a_code(code: str) -> bool:
     return bool(_A_CODE_PATTERN.fullmatch(code))
 
 
-def test_hk_code(code: str) -> bool:
+def is_hk_code(code: str) -> bool:
     return bool(_HK_CODE_PATTERN.fullmatch(code))
 
 
@@ -209,8 +209,8 @@ def normalize_symbol(symbol: str) -> str:
         parts = lower.split(".", 1)
         if len(parts) > 1 and parts[1]:
             return f"us{parts[1]}"
-    if test_a_code(lower):
+    if is_a_code(lower):
         return get_stock_with_prefix(lower)
-    if test_hk_code(lower):
+    if is_hk_code(lower):
         return f"hk{lower}"
     return lower

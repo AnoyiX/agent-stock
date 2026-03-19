@@ -5,7 +5,7 @@ from datetime import datetime
 import click
 
 from ..api.baidu import fetch_fundflow_day_payload, fetch_fundflow_spread_payload, to_baidu_market, to_simple_code
-from .quote import get_stock_with_prefix, test_a_code, test_hk_code
+from ..api.qq import get_stock_with_prefix, is_a_code, is_hk_code
 
 
 def _normalize_symbol(symbol: str) -> str:
@@ -14,9 +14,9 @@ def _normalize_symbol(symbol: str) -> str:
         parts = lower.split(".", 1)
         if len(parts) > 1 and parts[1]:
             return f"us{parts[1]}"
-    if test_a_code(lower):
+    if is_a_code(lower):
         return get_stock_with_prefix(lower)
-    if test_hk_code(lower):
+    if is_hk_code(lower):
         return f"hk{lower}"
     return lower
 

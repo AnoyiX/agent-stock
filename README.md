@@ -31,6 +31,8 @@ stock chgdiagram --market ab
 stock heatmap --market ab
 
 # 个股数据
+stock quote 000001
+stock quote 000001,600519
 stock kline 000001
 stock fundflow 000001
 

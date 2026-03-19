@@ -6,6 +6,7 @@ import click
 import requests
 
 from . import http_get_with_proxy_fallback
+from .baidu import get_stock_with_prefix, is_a_code, is_hk_code
 
 COMMON_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
@@ -138,3 +139,28 @@ def arr2obj(arr: list[str]) -> dict:
         "pb": _get(arr, 46),
         "vr": _get(arr, 49 + index_offset),
     }
+
+
+def get_query_code(symbol: str) -> str:
+    lower = symbol.lower()
+    if lower.startswith("us"):
+        return lower.split(".")[0]
+    if is_a_code(lower):
+        return get_stock_with_prefix(lower)
+    if is_hk_code(lower):
+        return f"hk{lower}"
+    return lower
+
+
+def get_stock_by_query(query: str) -> dict:
+    result = fetch_quote_json(query)
+    return [arr2obj(arr) for arr in result.values()]
+
+
+def get_stock_by_code(symbol: str) -> dict:
+    query = get_query_code(symbol)
+    result = fetch_quote_json(query)
+    arr = result.get(query)
+    if not isinstance(arr, list) or len(arr) < 2:
+        raise click.ClickException("无效股票代码或暂无行情数据")
+    return arr2obj(arr)
