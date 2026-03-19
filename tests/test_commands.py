@@ -5,8 +5,8 @@ from stock.commands import chgdiagram as chgdiagram_command
 from stock.commands import fundflow as fundflow_command
 from stock.commands import heatmap as heatmap_command
 from stock.commands import kline as kline_command
-from stock.commands import market as market_command
 from stock.commands import quote as quote_command
+from stock.commands import search as market_command
 
 runner = CliRunner()
 

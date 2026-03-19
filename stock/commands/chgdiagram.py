@@ -43,7 +43,7 @@ def format_chgdiagram_markdown(data: dict) -> str:
     ratio = data.get("ratio", {})
     diagram = data.get("diagram", [])
     lines = [
-        f"{_format_status(str(item.get('status', '')) )},{str(item.get('title', ''))},{int(item.get('count', 0))}"
+        f"{_format_status(str(item.get('status', '')))},{str(item.get('title', ''))},{int(item.get('count', 0))}"
         for item in diagram
         if isinstance(item, dict)
     ]
@@ -70,6 +70,6 @@ def format_chgdiagram_markdown(data: dict) -> str:
     help="市场",
 )
 def chgdiagram(market: str):
+    """市场涨跌分布"""
     data = get_chgdiagram_data(market.lower())
     click.echo(format_chgdiagram_markdown(data))
-

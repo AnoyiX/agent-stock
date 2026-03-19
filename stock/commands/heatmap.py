@@ -74,5 +74,6 @@ def format_heatmap_markdown(data: dict) -> str:
     help="市场",
 )
 def heatmap(market: str):
+    """行业板块热力图"""
     data = get_heatmap_data(market.lower())
     click.echo(format_heatmap_markdown(data))

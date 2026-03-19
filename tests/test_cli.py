@@ -16,27 +16,25 @@ def test_help_lists_planned_commands():
     assert "chgdiagram" in result.output
     assert "heatmap" in result.output
     assert "search" in result.output
-    assert "market" in result.output
-    assert "history" in result.output
-    assert "config" in result.output
+    assert "index" in result.output
 
 
 def test_quote_help_supports_symbol_argument():
     result = runner.invoke(cli, ["quote", "--help"])
     assert result.exit_code == 0
-    assert "SYMBOL" in result.output
+    assert "symbol" in result.output
 
 
 def test_plate_help_supports_symbol_argument():
     result = runner.invoke(cli, ["plate", "--help"])
     assert result.exit_code == 0
-    assert "SYMBOL" in result.output
+    assert "symbol" in result.output
 
 
 def test_news_help_supports_symbol_argument():
     result = runner.invoke(cli, ["news", "--help"])
     assert result.exit_code == 0
-    assert "SYMBOL" in result.output
+    assert "symbol" in result.output
 
 
 def test_history_help_supports_range_option():
@@ -54,7 +52,7 @@ def test_kline_help_supports_code_argument():
 def test_fundflow_help_supports_symbol_argument():
     result = runner.invoke(cli, ["fundflow", "--help"])
     assert result.exit_code == 0
-    assert "SYMBOL" in result.output
+    assert "symbol" in result.output
 
 
 def test_chgdiagram_help_supports_market_option():

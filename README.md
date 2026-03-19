@@ -4,7 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/agent-stock.svg)](https://pypi.org/project/agent-stock/)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://pypi.org/project/agent-stock/)
 
-面向 AI Agent 的股市数据命令行工具。提供市场概览、个股行情、板块涨跌、技术指标与资金流向等信息，输出对机器可读的 Markdown/CSV 结构，便于自动化处理。
+面向 AI Agent 的股市数据命令行工具，提供市场概览、个股行情、板块涨跌、技术指标与资金流向等信息。
 
 ## 安装
 
@@ -43,7 +43,7 @@ stock plate 000001
 stock news 000001
 
 # 技术分析与市场
-stock kline 000001 --count 60
+stock kline 000001
 stock fundflow 000001
 stock chgdiagram --market ab
 stock heatmap --market ab
@@ -56,21 +56,23 @@ stock -v
 
 ## 命令
 
-### 核心命令
+### 市场数据
 
 ```bash
-stock market                        # 大盘指数总览（占位）
-stock quote <SYMBOL>                # 个股实时行情与关键指标
-stock plate <SYMBOL>                # 相关板块（地域/行业/概念）涨跌幅
-stock news <SYMBOL>                 # 个股最新资讯摘要
-stock kline <SYMBOL> --count N      # 最近 N 条日K + EMA/BOLL/KDJ/RSI
-stock fundflow <SYMBOL>             # 资金分布与每日主力/散户净流向
-stock chgdiagram --market ab        # 涨跌分布（ab/us/hk）
-stock heatmap --market ab           # 行业板块热力图（ab/us/hk）
-stock search <KEYWORD>              # 名称/关键词搜索（CSV）
-stock history <TICKER> -r 1m        # 历史K线（占位，范围：1d/5d/1m/3m/6m/1y/5y）
-stock config show                   # 查看当前配置
-stock config set market US          # 设置市场（US | CN | HK）
+stock index --market ab             # 大盘主要指数总览
+stock chgdiagram --market ab        # 涨跌分布
+stock heatmap --market ab           # 行业板块热力图
+stock search <keyword>              # 股票搜索
+```
+
+### 个股数据
+
+```bash
+stock quote <symbol>                # 个股实时行情
+stock plate <symbol>                # 个股相关板块涨跌幅（地域/行业/概念）
+stock news <symbol>                 # 个股最新资讯
+stock kline <symbol>                # 日K数据以及技术指标（EMA/BOLL/KDJ/RSI）
+stock fundflow <symbol>             # 资金分布与每日主力/散户净流向
 ```
 
 ### 全局选项
@@ -82,15 +84,6 @@ stock config set market US          # 设置市场（US | CN | HK）
 | -i, --interval | 整数 [1,3600] | 10     | dashboard 刷新间隔（秒） |
 | --no-color     | Flag          | —      | 禁用颜色输出             |
 
-## 配置
-
-```bash
-# 查看当前配置
-stock config show
-
-# 设置市场（US | CN | HK）
-stock config set market US
-```
 
 ## 开发
 

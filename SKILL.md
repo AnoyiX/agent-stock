@@ -2,7 +2,7 @@
 name: agent-stock
 description: 用于股票行情查询与分析的命令行技能。用户提到 stock 命令、股票代码、最新资讯、市场概览、K 线或配置管理时调用。
 author: AnoyiX
-version: "0.1.0"
+version: "0.1.2"
 tags:
   - stock
   - 股票

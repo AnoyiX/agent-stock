@@ -4,8 +4,8 @@ from datetime import datetime
 
 import click
 
-from ..api.baidu import fetch_fundflow_day_payload, fetch_fundflow_spread_payload
-from .quote import get_stock_with_prefix, test_a_code, test_hk_code, to_baidu_market, to_simple_code
+from ..api.baidu import fetch_fundflow_day_payload, fetch_fundflow_spread_payload, to_baidu_market, to_simple_code
+from .quote import get_stock_with_prefix, test_a_code, test_hk_code
 
 
 def _normalize_symbol(symbol: str) -> str:
@@ -187,5 +187,6 @@ def format_fundflow_markdown(data: dict) -> str:
 @click.command(name="fundflow")
 @click.argument("symbol")
 def fundflow(symbol: str):
+    """资金分布与每日主力/散户净流向"""
     data = get_fundflow_data(symbol)
     click.echo(format_fundflow_markdown(data))

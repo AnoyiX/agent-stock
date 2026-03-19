@@ -266,5 +266,6 @@ def format_kline_markdown(data: dict) -> str:
 @click.argument("code")
 @click.option("--count", default=45, show_default=True, type=click.IntRange(1, 90), help="输出最近N条日K")
 def kline(code: str, count: int):
+    """日K数据以及技术指标（EMA/BOLL/KDJ/RSI）"""
     data = get_kline_data(code, count=count)
     click.echo(format_kline_markdown(data))

@@ -11,8 +11,10 @@ from .commands.chgdiagram import chgdiagram
 from .commands.fundflow import fundflow
 from .commands.heatmap import heatmap
 from .commands.kline import kline
-from .commands.market import config, history, market, search
-from .commands.quote import news, plate, quote
+from .commands.news import news
+from .commands.plate import plate
+from .commands.quote import quote
+from .commands.search import search
 
 
 @click.group()
@@ -24,12 +26,12 @@ from .commands.quote import news, plate, quote
     default=10,
     show_default=True,
     type=click.IntRange(1, 3600),
-    help="dashboard 刷新间隔（秒）",
+    help="刷新间隔（秒）",
 )
 @click.option("--no-color", is_flag=True, help="禁用颜色输出")
 @click.pass_context
 def cli(ctx: click.Context, verbose: bool, interval: int, no_color: bool):
-    """stock — 股市行情命令行工具 📈"""
+    """股市行情命令行工具 - stock"""
     ctx.ensure_object(dict)
     ctx.obj["interval"] = interval
     ctx.color = not no_color
@@ -39,13 +41,10 @@ def cli(ctx: click.Context, verbose: bool, interval: int, no_color: bool):
         logging.basicConfig(level=logging.WARNING)
 
 
-cli.add_command(market)
 cli.add_command(quote)
 cli.add_command(plate)
 cli.add_command(news)
 cli.add_command(search)
-cli.add_command(history)
-cli.add_command(config)
 cli.add_command(kline)
 cli.add_command(fundflow)
 cli.add_command(chgdiagram)
