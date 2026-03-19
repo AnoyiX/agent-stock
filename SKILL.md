@@ -2,7 +2,7 @@
 name: agent-stock
 description: 面向 AI Agent 的股市数据命令行技能。根据用户关于股票查询、市场概览、行业热力图、板块涨跌、个股资讯、日K/技术指标、资金流向与代码搜索等诉求触发调用。
 author: AnoyiX
-version: "0.1.2"
+version: "0.1.3"
 tags:
   - stock
   - cli
