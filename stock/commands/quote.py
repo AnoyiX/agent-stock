@@ -3,7 +3,7 @@ from __future__ import annotations
 import click
 
 from ..api.baidu import get_stock_with_prefix, test_a_code, test_hk_code
-from ..api.qq import arr2obj, fetch_plate_payload, fetch_quote_json
+from ..api.qq import arr2obj, fetch_quote_json
 
 
 def get_query_code(symbol: str) -> str:
@@ -54,5 +54,4 @@ def quote(symbol: str):
     """个股实时行情"""
     data = get_stock_by_code(symbol)
     click.echo(format_quote_markdown(data))
-
 
