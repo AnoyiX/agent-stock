@@ -29,6 +29,7 @@ python -m pip install -U agent-stock  # 升级
 stock search 腾讯
 stock chgdiagram --market ab
 stock heatmap --market ab
+stock rank --count 20
 
 # 个股数据
 stock quote 000001
@@ -53,6 +54,7 @@ stock index --market ab             # 大盘主要指数总览
 stock chgdiagram --market ab        # 涨跌分布
 stock heatmap --market ab           # 行业板块热力图
 stock search <keyword>              # 股票搜索
+stock rank [options]                # 股票排序（仅 A 股）
 ```
 
 ### 个股数据

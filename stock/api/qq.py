@@ -99,6 +99,39 @@ def fetch_search_payload(query: str) -> dict:
         raise click.ClickException("搜索接口返回解析失败") from exc
 
 
+def fetch_board_rank_payload(
+    board_code: str = "aStock",
+    sort_type: str = "turnover",
+    direct: str = "down",
+    offset: int = 0,
+    count: int = 20,
+) -> dict:
+    url = "https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList"
+    try:
+        response = http_get_with_proxy_fallback(
+            url,
+            params={
+                "_appver": "11.17.0",
+                "board_code": board_code,
+                "sort_type": sort_type,
+                "direct": direct,
+                "offset": str(offset),
+                "count": str(count),
+            },
+            headers=COMMON_HEADERS,
+            timeout=10.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return payload
+    except requests.HTTPError as exc:
+        raise click.ClickException(f"排行接口请求失败: HTTP {exc.response.status_code}") from exc
+    except requests.RequestException as exc:
+        raise click.ClickException(f"排行接口不可用: {exc}") from exc
+    except ValueError as exc:
+        raise click.ClickException("排行接口返回解析失败") from exc
+
+
 def _to_float(value: str, default: float = 0.0) -> float:
     try:
         return float(value)
