@@ -57,22 +57,24 @@ def format_fundflow_markdown(data: dict) -> str:
     parts: list[str] = []
 
     parts.extend([
-        "## 资金流向",
+        "## 资金流向（单位：万元）",
         "",
-        "### 今日资金流向（单位：万元）",
+        "### 今日资金流向",
         "",
         f"> {_safe_get(summary, 's0', '')}",
         "",
         "```csv",
         "类别,流入,流入占比,流出,流出占比",
-        f"主力,{_to_wan(_safe_get(today, 'mainIn'))},{_safe_get(today, 'mainInRate')}%,",
-        f"    {_to_wan(_safe_get(today, 'mainOut'))},{_safe_get(today, 'mainOutRate')}%",
-        f"散户,{_to_wan(_safe_get(today, 'retailIn'))},{_safe_get(today, 'retailInRate')}%,",
-        f"    {_to_wan(_safe_get(today, 'retailOut'))},{_safe_get(today, 'retailOutRate')}%",
+        f"主力,{_to_wan(_safe_get(today, 'mainIn'))},{_safe_get(today, 'mainInRate')}%," +
+        f"{_to_wan(_safe_get(today, 'mainOut'))},{_safe_get(today, 'mainOutRate')}%",
+        f"散户,{_to_wan(_safe_get(today, 'retailIn'))},{_safe_get(today, 'retailInRate')}%," +
+        f"{_to_wan(_safe_get(today, 'retailOut'))},{_safe_get(today, 'retailOutRate')}%",
         "```",
         "",
-        f"- 超大单净流入：{_to_wan(_safe_get(today, 'superFlow'))}，大单净流入：{_to_wan(_safe_get(today, 'bigFlow'))}",
-        f"- 中单净流入：{_to_wan(_safe_get(today, 'normalFlow'))}，小单净流入：{_to_wan(_safe_get(today, 'smallFlow'))}",
+        f"- 超大单净流入：{_to_wan(_safe_get(today, 'superFlow'))}",
+        f"- 大单净流入：{_to_wan(_safe_get(today, 'bigFlow'))}",
+        f"- 中单净流入：{_to_wan(_safe_get(today, 'normalFlow'))}",
+        f"- 小单净流入：{_to_wan(_safe_get(today, 'smallFlow'))}",
         "",
         f"- 主力净流入：{_to_wan(_safe_get(today, 'mainNetIn'))}",
     ])
@@ -81,7 +83,7 @@ def format_fundflow_markdown(data: dict) -> str:
     if day_list:
         parts.extend([
             "",
-            "### 近5日主力净流入（单位：万元）",
+            "### 近5日主力净流入",
             "",
             "```csv",
             "日期,主力净流入",
