@@ -39,7 +39,7 @@ def get_stock_latest_news(symbol: str) -> dict:
 def format_news_markdown(news_data: dict) -> str:
     news_list = news_data["news"]
     if not news_list:
-        return "暂无数据"
+        return "##快讯\n\n暂无数据\n"
     lines: list[str] = []
     for item in news_list:
         if not isinstance(item, dict):
@@ -50,7 +50,7 @@ def format_news_markdown(news_data: dict) -> str:
         lines.append(f"- [{_format_news_timestamp(str(item.get('publishTime', '')))}] {abstract}")
     if not lines:
         lines = ["暂无数据"]
-    return "\n".join(lines)
+    return "\n".join(["## 快讯", "", "\n".join(lines)])
 
 
 def _format_news_timestamp(timestamp: str) -> str:

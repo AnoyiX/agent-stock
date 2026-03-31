@@ -8,6 +8,7 @@ import click
 
 from . import __version__
 from .commands.chgdiagram import chgdiagram
+from .commands.detail import detail
 from .commands.fundflow import fundflow
 from .commands.heatmap import heatmap
 from .commands.index import index
@@ -45,6 +46,7 @@ def cli(ctx: click.Context, verbose: bool, interval: int, no_color: bool):
 
 
 cli.add_command(quote)
+cli.add_command(detail)
 cli.add_command(plate)
 cli.add_command(news)
 cli.add_command(search)

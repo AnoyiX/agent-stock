@@ -37,13 +37,15 @@ def get_stock_plate_change(symbol: str) -> dict:
 def format_plate_markdown(plate_data: dict) -> str:
     return "\n".join(
         [
-            "## 地域",
+            "## 相关板块",
+            "",
+            "### 地域",
             _format_plate_section(plate_data["area"]),
             "",
-            "## 行业",
+            "### 行业",
             _format_plate_section(plate_data["industry"]),
             "",
-            "## 概念",
+            "### 概念",
             _format_plate_section(plate_data["concept"]),
         ]
     )

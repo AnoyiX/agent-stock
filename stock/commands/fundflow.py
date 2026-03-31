@@ -57,7 +57,7 @@ def format_fundflow_markdown(data: dict) -> str:
     parts: list[str] = []
 
     parts.extend([
-        "## 资金流向（单位：万元）",
+        "## 资金流向",
         "",
         "### 今日资金流向",
         "",

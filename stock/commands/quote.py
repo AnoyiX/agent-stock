@@ -8,6 +8,8 @@ from ..api.qq import get_query_code, get_stock_by_code, get_stock_by_query
 def format_quote_markdown(quote: dict) -> str:
     return "\n".join(
         [
+            "## 实时行情",
+            "",
             f"- 代码: {quote['code']}",
             f"- 名称: {quote['name']}",
             f"- 价格: {quote['price']}",
