@@ -108,6 +108,12 @@ uv tool uninstall agent-stock
 uv run python -m stock quote 000001
 ```
 
-## License
+## Trae
 
-Apache-2.0
+使用如下命令在 Trae 中启用 skills
+
+```bash
+mkdir -p .trae/skills/
+
+ln -s $(pwd)/skills .trae/skills/agent-stock
+```
