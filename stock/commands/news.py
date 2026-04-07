@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime
-
 import click
 
-from ..api.baidu import fetch_latest_news_payload, normalize_symbol, to_baidu_market, to_simple_code
+from ..api.baidu import normalize_symbol
+from ..api.qq import fetch_news_payload
 
 
 @click.command(name="news")
@@ -17,23 +16,19 @@ def news(symbol: str):
 
 def get_stock_latest_news(symbol: str) -> dict:
     normalized = normalize_symbol(symbol)
-    market = to_baidu_market(normalized)
-    code = to_simple_code(normalized)
-    if not market or not code:
+    if not normalized:
         raise click.ClickException("无效股票代码或暂无资讯数据")
-    payload = fetch_latest_news_payload(market, code)
-    result = payload.get("Result")
-    if not isinstance(result, list) or not result:
+    payload = fetch_news_payload(normalized)
+    code = payload.get("code")
+    if code != 0:
+        raise click.ClickException(payload.get("msg", "资讯接口返回错误"))
+    data = payload.get("data")
+    if not isinstance(data, dict):
         return {"symbol": normalized, "news": []}
-    item = result[0] if isinstance(result[0], dict) else {}
-    tpl = item.get("TplData")
-    tpl_data = tpl if isinstance(tpl, dict) else {}
-    sentiment = tpl_data.get("aiSentimentXcxListInfo")
-    sentiment_info = sentiment if isinstance(sentiment, dict) else {}
-    news = sentiment_info.get("sentimentListInfo")
-    if not isinstance(news, list):
-        news = []
-    return {"symbol": normalized, "news": news}
+    news_list = data.get("data")
+    if not isinstance(news_list, list):
+        news_list = []
+    return {"symbol": normalized, "news": news_list}
 
 
 def format_news_markdown(news_data: dict) -> str:
@@ -44,18 +39,24 @@ def format_news_markdown(news_data: dict) -> str:
     for item in news_list:
         if not isinstance(item, dict):
             continue
-        abstract = str(item.get("abstract", "")).strip()
-        if not abstract:
+        title = str(item.get("title", "")).strip()
+        if not title:
             continue
-        lines.append(f"- [{_format_news_timestamp(str(item.get('publishTime', '')))}] {abstract}")
+        lines.append(f"- [{_format_news_timestamp(str(item.get('time', '')))}] {title}")
     if not lines:
         lines = ["暂无数据"]
     return "\n".join(["## 快讯", "", "\n".join(lines)])
 
 
 def _format_news_timestamp(timestamp: str) -> str:
+    if not timestamp:
+        return "未知时间"
     try:
-        dt = datetime.fromtimestamp(int(str(timestamp)))
-        return dt.strftime("%Y%m%d %H:%M")
-    except (TypeError, ValueError, OSError):
+        parts = timestamp.split(" ")
+        if len(parts) >= 2:
+            date_part = parts[0].replace("-", "")
+            time_part = parts[1][:5]
+            return f"{date_part} {time_part}"
+        return timestamp
+    except (TypeError, ValueError, IndexError):
         return "未知时间"

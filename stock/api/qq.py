@@ -132,6 +132,26 @@ def fetch_board_rank_payload(
         raise click.ClickException("排行接口返回解析失败") from exc
 
 
+def fetch_news_payload(symbol: str, page: int = 1, n: int = 20) -> dict:
+    url = "https://proxy.finance.qq.com/ifzqgtimg/appstock/news/info/search"
+    try:
+        response = http_get_with_proxy_fallback(
+            url,
+            params={"page": str(page), "symbol": symbol, "n": str(n), "type": "2"},
+            headers=COMMON_HEADERS,
+            timeout=10.0,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return payload
+    except requests.HTTPError as exc:
+        raise click.ClickException(f"资讯接口请求失败: HTTP {exc.response.status_code}") from exc
+    except requests.RequestException as exc:
+        raise click.ClickException(f"资讯接口不可用: {exc}") from exc
+    except ValueError as exc:
+        raise click.ClickException("资讯接口返回解析失败") from exc
+
+
 def _to_float(value: str, default: float = 0.0) -> float:
     try:
         return float(value)
