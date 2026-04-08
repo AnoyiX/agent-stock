@@ -129,37 +129,6 @@ def fetch_chgdiagram_payload(market: str) -> dict:
         raise click.ClickException("涨跌分布接口返回解析失败") from exc
 
 
-def fetch_blocks_heatmap_payload(market: str, type_code: str) -> dict:
-    url = "https://finance.pae.baidu.com/vapi/v2/blocks"
-    try:
-        response = http_get_with_proxy_fallback(
-            url,
-            params={
-                "style": "heatmap",
-                "market": market,
-                "typeCode": type_code,
-                "sortKey": "amount",
-                "sortType": "desc",
-                "pn": "0",
-                "rn": "80",
-                "finClientType": "pc",
-            },
-            headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-                "Referer": "https://gushitong.baidu.com/",
-                "Accept": "application/json,text/plain,*/*",
-            },
-            timeout=10.0,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        return payload
-    except requests.HTTPError as exc:
-        raise click.ClickException(f"行业板块热力图接口请求失败: HTTP {exc.response.status_code}") from exc
-    except requests.RequestException as exc:
-        raise click.ClickException(f"行业板块热力图接口不可用: {exc}") from exc
-    except ValueError as exc:
-        raise click.ClickException("行业板块热力图接口返回解析失败") from exc
 
 
 def to_baidu_market(symbol: str) -> str:

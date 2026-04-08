@@ -9,10 +9,6 @@
 ## 安装
 
 ```bash
-# pipx
-pipx install agent-stock  # 安装
-pipx upgrade agent-stock  # 升级
-
 # uv tool
 uv tool install agent-stock  # 安装
 uv tool upgrade agent-stock  # 升级
@@ -28,7 +24,6 @@ python -m pip install -U agent-stock  # 升级
 # 市场数据
 stock search 腾讯
 stock chgdiagram --market ab
-stock heatmap --market ab
 stock rank --count 20
 
 # 个股数据
@@ -52,10 +47,10 @@ stock -v
 ```bash
 stock index --market <market>             # 大盘主要指数总览
 stock chgdiagram --market <market>        # 涨跌分布
-stock heatmap --market <market>           # 行业板块热力图
-stock search <keyword>                    # 股票搜索
+stock search <keyword>                    # 股票搜索，仅限股票名称、股票代码、股票简称搜索
 stock query <condition>                   # 条件选股
 stock rank --sort <sort> --count <count>  # 市场股票排序，限A股
+
 
 # 参数说明：
 # - market: 市场，可选 ab｜us｜hk，默认 ab
@@ -71,7 +66,7 @@ stock rank --sort <sort> --count <count>  # 市场股票排序，限A股
 stock detail <symbol>               # 个股详情，包含股票基本信息、实时行情、相关板块、资讯、日K数据、技术指标、资金流向等
 stock quote <symbols>               # 个股实时行情（支持批量查询）
 stock plate <symbol>                # 个股相关板块涨跌幅（地域/行业/概念）
-stock news <symbol>                 # 个股最新资讯
+stock news <symbol>                 # 个股最新新闻
 stock kline <symbol>                # 日K数据以及技术指标（EMA/BOLL/KDJ/RSI）
 stock fundflow <symbol>             # 资金分布与每日主力/散户净流向
 
@@ -94,15 +89,6 @@ uv run pytest tests/ -v
 
 # Lint
 uv run ruff check .
-
-# 安装当前目录源码，并暴露 `stock` 命令
-uv tool install --from . agent-stock
-
-# 强制升级
-uv tool install --from . agent-stock --force --reinstall --refresh --no-cache
-
-# 卸载
-uv tool uninstall agent-stock
 
 # 调试
 uv run python -m stock quote 000001

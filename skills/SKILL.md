@@ -23,7 +23,6 @@ tags:
 ```bash
 stock index --market <market>             # 大盘主要指数总览
 stock chgdiagram --market <market>        # 涨跌分布
-stock heatmap --market <market>           # 行业板块热力图
 stock search <keyword>                    # 股票搜索，仅限股票名称、股票代码、股票简称搜索
 stock query <condition>                   # 条件选股
 stock rank --sort <sort> --count <count>  # 市场股票排序，限A股
@@ -42,7 +41,7 @@ stock rank --sort <sort> --count <count>  # 市场股票排序，限A股
 stock detail <symbol>               # 个股详情，包含股票基本信息、实时行情、相关板块、资讯、日K数据、技术指标、资金流向等
 stock quote <symbols>               # 个股实时行情（支持批量查询）
 stock plate <symbol>                # 个股相关板块涨跌幅（地域/行业/概念）
-stock news <symbol>                 # 个股最新资讯
+stock news <symbol>                 # 个股最新新闻
 stock kline <symbol>                # 日K数据以及技术指标（EMA/BOLL/KDJ/RSI）
 stock fundflow <symbol>             # 资金分布与每日主力/散户净流向
 
@@ -67,7 +66,6 @@ stock news 600519
 stock kline 600519 --count 60
 stock fundflow 600519
 stock chgdiagram --market ab
-stock heatmap --market hk
 stock rank --sort turnover --count 20
 ```
 
