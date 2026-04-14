@@ -23,7 +23,6 @@ python -m pip install -U agent-stock  # 升级
 ```bash
 # 市场数据
 stock search 腾讯
-stock chgdiagram --market ab
 stock rank --count 20
 
 # 个股数据
@@ -46,17 +45,16 @@ stock -v
 
 ```bash
 stock index --market <market>             # 大盘主要指数总览
-stock chgdiagram --market <market>        # 涨跌分布
 stock search <keyword>                    # 股票搜索，仅限股票名称、股票代码、股票简称搜索
-stock query <condition>                   # 条件选股
 
 # 仅限A股使用的命令
+stock query <condition>                   # 条件选股
 stock rank --sort <sort> --count <count>  # 市场股票排序，sort 默认值 turnover
 stock pt --sort <ptSort> --count <count>  # 申万行业板块排序，sort 默认值：priceRatio
 
 # 参数说明：
 # - market: 市场，可选 ab｜us｜hk，默认 ab
-# - sort: 排序类型，可选 turnover｜amplitude｜volumeRatio｜exchange｜priceRatio
+# - sort: 排序类型，可选 成交额 turnover｜量比 volumeRatio｜换手率 exchange｜涨跌幅 priceRatio｜主力净流入 netMainIn
 # - count: 排序数量，默认 20，取值范围 1 - 100
 # - keyword: 关键词，示例：腾讯、tengxun等
 # - condition: 自然语言的条件语句，示例："MACD金叉；KDJ金叉；非ST；非涨停；市盈率大于0；市盈率小于100；市值大于50亿；"
@@ -104,10 +102,10 @@ uv run python -m stock quote 000001
 ```bash
 mkdir -p .trae/skills/
 
-ln -s $(pwd)/skills .trae/skills/agent-stock
+ln -s $(pwd)/skills ~/.trae/skills/agent-stock
 ```
 
 测试 agent-stock 技能：
 
-- 选股：`当前时间：2026-04-09 12:22:35，帮我选股`
+- 选股：`帮我选股`
 - 个股决策：`帮我决策 天孚通信`

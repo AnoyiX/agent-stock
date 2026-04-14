@@ -50,7 +50,7 @@ def format_rank_table(data: dict) -> str:
                 it.get("zxj", ""),
                 it.get("zdf", ""),
                 it.get("turnover", ""),
-                it.get("hsl", ""),
+                it.get("hsl", "") + "%",
                 it.get("lb", ""),
                 it.get("zsz", ""),
                 it.get("ltsz", ""),
