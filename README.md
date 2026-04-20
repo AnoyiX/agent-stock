@@ -111,3 +111,7 @@ mkdir -p .trae/skills/
 ln -s $(pwd)/skills ~/.trae/skills/agent-stock
 ```
 
+
+## Download History
+
+[![Download History](https://skill-history.com/chart/anoyix/agent-stock.svg)](https://skill-history.com/anoyix/agent-stock)
