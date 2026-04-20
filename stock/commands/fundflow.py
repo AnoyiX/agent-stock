@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.baidu import get_stock_with_prefix, is_a_code, is_hk_code
-from ..api.qq import fetch_fundflow_payload
+from ..api.qq import fetch_fundflow_payload, get_stock_with_prefix, is_a_code, is_hk_code
 
 
 def _normalize_symbol(symbol: str) -> str:
@@ -58,8 +57,6 @@ def format_fundflow_markdown(data: dict) -> str:
 
     parts.extend([
         "## 资金流向",
-        "",
-        "### 今日资金流向",
         "",
         f"> {_safe_get(summary, 's0', '')}",
         "",

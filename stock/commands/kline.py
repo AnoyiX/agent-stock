@@ -92,7 +92,7 @@ def boll(data: list[DayLineItem], period: int = 20, std_dev_multiplier: int = 2)
         if index < period - 1:
             values.append(BollBand(up=0.0, mid=0.0, low=0.0))
             continue
-        period_data = data[index - period + 1 : index + 1]
+        period_data = data[index - period + 1: index + 1]
         closes = [x.close for x in period_data]
         mid = _get_simple_moving_average(closes)
         std_dev = _get_standard_deviation(closes)
@@ -115,7 +115,7 @@ def kdj(data: list[DayLineItem], period_k: int = 9, period_d: int = 3, period_j:
     start_index = period_k - 1
     results: list[KDJResult] = [KDJResult(k=0.0, d=0.0, j=0.0, rsv=0.0) for _ in range(start_index)]
     for index in range(start_index, len(data)):
-        period_data = data[index - start_index : index + 1]
+        period_data = data[index - start_index: index + 1]
         rsv = _calculate_rsv(period_data)
         if index == start_index:
             k_value = rsv
@@ -255,8 +255,8 @@ def format_kline_markdown(data: dict) -> str:
             f"- EMA20: {factors['ema_20']}",
             f"- BOLL(20,2): UP:{factors['boll_up']}, MID:{factors['boll_mid']}, LOW:{factors['boll_low']}",
             f"- KDJ(9,3,3): K:{factors['kdj_k']}, D:{factors['kdj_d']}, J:{factors['kdj_j']}",
-            f"- RSI6: {factors['rsi_6']}",
-            f"- RSI12: {factors['rsi_12']}",
+            f"- RSI(6): {factors['rsi_6']}",
+            f"- RSI(12): {factors['rsi_12']}",
         ]
     )
 

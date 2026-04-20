@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.baidu import get_stock_with_prefix
-from ..api.qq import fetch_plate_payload
+from ..api.qq import fetch_plate_payload, get_stock_with_prefix
 
 
 def _format_plate_item(plate: dict) -> str:

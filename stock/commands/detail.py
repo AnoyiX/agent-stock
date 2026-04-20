@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import click
 
+from stock.commands.mline import format_mline_markdown, get_mline_data
+
 from .fundflow import format_fundflow_markdown, get_fundflow_data
 from .kline import format_kline_markdown, get_kline_data
 from .news import format_news_markdown, get_stock_latest_news
@@ -35,6 +37,12 @@ def detail(symbol: str, count: int):
         sections.append(format_kline_markdown(kline_data))
     except click.ClickException as e:
         sections.append(_format_section("日K线", str(e)))
+
+    try:
+        mline_data = get_mline_data(symbol, count=count)
+        sections.append(format_mline_markdown(mline_data))
+    except click.ClickException as e:
+        sections.append(_format_section("15分钟K线", str(e)))
 
     try:
         fundflow_data = get_fundflow_data(symbol)

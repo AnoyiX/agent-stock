@@ -11,6 +11,7 @@ from .commands.detail import detail
 from .commands.fundflow import fundflow
 from .commands.index import index
 from .commands.kline import kline
+from .commands.mline import mline
 from .commands.news import news
 from .commands.plate import plate
 from .commands.query import query
@@ -50,6 +51,7 @@ cli.add_command(news)
 cli.add_command(search)
 cli.add_command(query)
 cli.add_command(kline)
+cli.add_command(mline)
 cli.add_command(fundflow)
 cli.add_command(index)
 cli.add_command(rank)

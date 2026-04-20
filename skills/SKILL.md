@@ -2,7 +2,7 @@
 name: agent-stock
 description: AI 量化交易技能包。提供了股市实时数据获取工具，如市场概览、行业热力图、板块涨跌、个股资讯、日K/技术指标、资金流向与股票搜索等；还提供了短线交易选股和短线交易决策的工作流，为用户提供股票交易建议。
 author: AnoyiX
-version: "0.2.0"
+version: "0.2.1"
 tags:
   - Stock
   - CLI

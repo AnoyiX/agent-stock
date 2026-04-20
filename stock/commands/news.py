@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.baidu import normalize_symbol
-from ..api.qq import fetch_news_payload
+from ..api.qq import fetch_news_payload, normalize_symbol
 
 
 @click.command(name="news")

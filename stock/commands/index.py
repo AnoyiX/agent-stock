@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import click
 
-from ..api.baidu import fetch_chgdiagram_payload
-from ..api.qq import fetch_pt_board_rank_payload, get_stock_by_query, zdf_percent
+from ..api.qq import fetch_chgdiagram_payload, fetch_pt_board_rank_payload, get_stock_by_query, zdf_percent
 
 CODES = {
     'ab': [
@@ -58,53 +57,90 @@ def format_quotes_markdown(quotes: list[dict]) -> str:
     )
 
 
-def _format_status(status: str) -> str:
-    if status == "up":
+def _format_flag(flag: int) -> str:
+    if flag == 1:
         return "上涨"
-    if status == "same":
+    if flag == 0:
         return "平盘"
-    if status == "down":
+    if flag == -1:
         return "下跌"
-    return status
+    return str(flag)
 
 
-def get_chgdiagram_data(market: str) -> dict:
-    payload = fetch_chgdiagram_payload(market)
-    result = payload.get("Result") if isinstance(payload, dict) else {}
-    chg = result.get("chgdiagram") if isinstance(result, dict) else {}
-    ratio = chg.get("ratio") if isinstance(chg, dict) else {}
-    diagram = chg.get("diagram") if isinstance(chg, dict) else []
-    up = int(ratio.get("up", 0)) if isinstance(ratio, dict) else 0
-    balance = int(ratio.get("balance", 0)) if isinstance(ratio, dict) else 0
-    down = int(ratio.get("down", 0)) if isinstance(ratio, dict) else 0
+def _format_amount(value: float) -> str:
+    yi = value / 100000000
+    if yi >= 10000:
+        return f"{yi / 10000:.2f}万亿"
+    return f"{yi:.2f}亿"
+
+
+def get_chgdiagram_data() -> dict:
+    payload = fetch_chgdiagram_payload()
+    data_obj = payload.get("data") if isinstance(payload, dict) else {}
+    ups_downs = data_obj.get("ups_downs_dsb") if isinstance(data_obj, dict) else {}
+    turnover_dsb = data_obj.get("turnover_dsb") if isinstance(data_obj, dict) else {}
+    turnover = turnover_dsb.get("all") if isinstance(turnover_dsb, dict) else {}
+    up_count = int(ups_downs.get("up_count", 0) or 0) if isinstance(ups_downs, dict) else 0
+    flat_count = int(ups_downs.get("flat_count", 0) or 0) if isinstance(ups_downs, dict) else 0
+    down_count = int(ups_downs.get("down_count", 0) or 0) if isinstance(ups_downs, dict) else 0
+    up_limit_count = int(ups_downs.get("up_limit_count", 0) or 0) if isinstance(ups_downs, dict) else 0
+    down_limit_count = int(ups_downs.get("down_limit_count", 0) or 0) if isinstance(ups_downs, dict) else 0
+    up_ratio_comment = str(ups_downs.get("up_ratio_comment", "")) if isinstance(ups_downs, dict) else ""
+    detail_list = ups_downs.get("detail") if isinstance(ups_downs, dict) else []
     items: list[dict] = []
-    if isinstance(diagram, list):
-        for item in diagram:
+    if isinstance(detail_list, list):
+        for item in detail_list:
             if not isinstance(item, dict):
                 continue
             items.append(
                 {
-                    "status": str(item.get("status", "")),
-                    "title": str(item.get("title", "")),
+                    "flag": int(item.get("flag", 0) or 0),
+                    "section": str(item.get("section", "")),
                     "count": int(item.get("count", 0) or 0),
                 }
             )
-    return {"ratio": {"up": up, "balance": balance, "down": down}, "diagram": items}
+    amount = float(turnover.get("amount", 0) or 0) if isinstance(turnover, dict) else 0
+    amount_change = float(turnover.get("amount_change", 0) or 0) if isinstance(turnover, dict) else 0
+    return {
+        "up_count": up_count,
+        "flat_count": flat_count,
+        "down_count": down_count,
+        "up_limit_count": up_limit_count,
+        "down_limit_count": down_limit_count,
+        "up_ratio_comment": up_ratio_comment,
+        "detail": items,
+        "amount": amount,
+        "amount_change": amount_change,
+    }
 
 
 def format_chgdiagram_markdown(data: dict) -> str:
-    ratio = data.get("ratio", {})
-    diagram = data.get("diagram", [])
+    detail = data.get("detail", [])
     lines = [
-        f"{_format_status(str(item.get('status', '')))},{str(item.get('title', ''))},{int(item.get('count', 0))}"
-        for item in diagram
-        if isinstance(item, dict)
+        f"{_format_flag(it.get('flag', 0))},{it.get('section', '')},{it.get('count', 0)}"
+        for it in detail
+        if isinstance(it, dict)
     ]
+    amount = data.get("amount", 0)
+    amount_change = data.get("amount_change", 0)
+    amount_change_label = "放量" if amount_change >= 0 else "缩量"
+    amount_change_value = _format_amount(abs(amount_change))
+    summary = (
+        f"上涨：{data.get('up_count', 0)}家，"
+        f"平盘：{data.get('flat_count', 0)}家，"
+        f"下跌：{data.get('down_count', 0)}家，"
+        f"涨停：{data.get('up_limit_count', 0)}家，"
+        f"跌停：{data.get('down_limit_count', 0)}家"
+    )
     return "\n".join(
         [
             "## 涨跌分布",
             "",
-            f"上涨：{ratio.get('up', 0)}家，平盘：{ratio.get('balance', 0)}家，下跌：{ratio.get('down', 0)}家",
+            summary,
+            "",
+            f"> {data.get('up_ratio_comment', '')}",
+            "",
+            f"今日成交额：{_format_amount(amount)}，较昨日{amount_change_label}：{amount_change_value}",
             "",
             "```csv",
             "状态,区间,数量",
@@ -156,18 +192,11 @@ def format_pt_rank_table(data: dict) -> str:
     lines = [
         ",".join(
             [
-                it.get("code", ""),
                 it.get("name", ""),
                 it.get("zdf", ""),
-                it.get("zdf_d5", ""),
-                it.get("zd", ""),
                 it.get("hsl", ""),
                 it.get("lb", ""),
-                it.get("ltsz", ""),
                 it.get("zljlr", ""),
-                it.get("lzg_code", ""),
-                it.get("lzg_name", ""),
-                it.get("lzg_zdf", ""),
             ]
         )
         for it in items
@@ -178,7 +207,7 @@ def format_pt_rank_table(data: dict) -> str:
             "## 行业板块",
             "",
             "```csv",
-            "代码,名称,涨跌幅,5日涨跌,涨跌额,换手率,量比,流通市值,主力净流入,领涨股票代码,领涨股票,领涨股涨跌",
+            "名称,涨跌幅,换手率(%),量比,主力净流入(万元)",
             *lines,
             "```",
         ]
@@ -200,10 +229,10 @@ def index(market: str):
     click.echo("# 大盘行情")
     click.echo("")
     click.echo(format_quotes_markdown(data))
-    click.echo("")
-    chgdiagram_data = get_chgdiagram_data(market)
-    click.echo(format_chgdiagram_markdown(chgdiagram_data))
     if market == "ab":
+        click.echo("")
+        chgdiagram_data = get_chgdiagram_data()
+        click.echo(format_chgdiagram_markdown(chgdiagram_data))
         click.echo("")
         pt_data = get_pt_board_rank_list("priceRatio", "down", 0, 30)
         click.echo(format_pt_rank_table(pt_data))
