@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import click
 
-from ..api.qq import fetch_chgdiagram_payload, fetch_pt_board_rank_payload, get_current_time, get_stock_by_query, zdf_percent
+from ..api.qq import (
+    fetch_chgdiagram_payload,
+    fetch_pt_board_rank_payload,
+    get_current_time,
+    get_stock_by_query,
+    zdf_percent,
+)
 
 CODES = {
     'ab': [
