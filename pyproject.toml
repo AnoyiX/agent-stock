@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-stock"
-version = "0.2.3"
+version = "0.2.4"
 description = "A fast CLI tool for real-time stock data"
 readme = "README.md"
 license = "Apache-2.0"
