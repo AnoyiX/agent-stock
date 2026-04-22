@@ -9,6 +9,7 @@ from .kline import format_kline_markdown, get_kline_data
 from .news import format_news_markdown, get_stock_latest_news
 from .plate import format_plate_markdown, get_stock_plate_change
 from .quote import format_quote_markdown
+from ..utils.evaluate_detail import evaluate_fundflow, format_fundflow_evaluation_markdown
 
 
 def _format_section(title: str, body: str) -> str:
@@ -62,3 +63,12 @@ def detail(symbol: str):
         sections.append(_format_section("快讯", str(e)))
 
     click.echo("\n\n".join(sections))
+
+    # click.echo("\n\n## 最终评估\n\n")
+
+    # if fundflow_data is not None:
+    #     try:
+    #         eval_data = evaluate_fundflow(fundflow_data, quote_data)
+    #         click.echo(format_fundflow_evaluation_markdown(eval_data))
+    #     except Exception:
+    #         pass
