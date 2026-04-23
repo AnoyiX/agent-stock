@@ -212,7 +212,6 @@ def _score_ema_trend(quotes: list[dict], klines: list[dict]) -> tuple[float, str
         ema20 = float(factors.get("ema_20", 0))
         if ema20 == 0:
             continue
-        price = _parse_price(quote.get("price", "0"))
         if ema5 > ema10 > ema20:
             spread_pct = (ema5 - ema20) / ema20 * 100
             if spread_pct > 2.0:
