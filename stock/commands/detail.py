@@ -4,12 +4,12 @@ import click
 
 from stock.commands.mline import format_mline_markdown, get_mline_data
 
+# from ..utils.evaluate_detail import evaluate_fundflow, format_fundflow_evaluation_markdown
 from .fundflow import format_fundflow_markdown, get_fundflow_data
 from .kline import format_kline_markdown, get_kline_data
 from .news import format_news_markdown, get_stock_latest_news
 from .plate import format_plate_markdown, get_stock_plate_change
 from .quote import format_quote_markdown
-from ..utils.evaluate_detail import evaluate_fundflow, format_fundflow_evaluation_markdown
 
 
 def _format_section(title: str, body: str) -> str:

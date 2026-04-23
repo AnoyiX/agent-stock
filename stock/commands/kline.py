@@ -70,9 +70,6 @@ def _get_factors(df: pd.DataFrame) -> dict:
     _ = df["boll"]
     _ = df["boll_ub"]
     _ = df["boll_lb"]
-    _ = df["kdjk"]
-    _ = df["kdjd"]
-    _ = df["kdjj"]
     _ = df["rsi_6"]
     _ = df["rsi_12"]
     last = len(df) - 1
@@ -83,9 +80,6 @@ def _get_factors(df: pd.DataFrame) -> dict:
         "boll_up": round(float(df["boll_ub"].iloc[last]), 2),
         "boll_mid": round(float(df["boll"].iloc[last]), 2),
         "boll_low": round(float(df["boll_lb"].iloc[last]), 2),
-        "kdj_k": round(float(df["kdjk"].iloc[last]), 2),
-        "kdj_d": round(float(df["kdjd"].iloc[last]), 2),
-        "kdj_j": round(float(df["kdjj"].iloc[last]), 2),
         "rsi_6": round(float(df["rsi_6"].iloc[last]), 2),
         "rsi_12": round(float(df["rsi_12"].iloc[last]), 2),
     }
@@ -153,7 +147,6 @@ def format_kline_markdown(data: dict) -> str:
             f"- EMA10: {factors['ema_10']}",
             f"- EMA20: {factors['ema_20']}",
             f"- BOLL(20,2): UP:{factors['boll_up']}, MID:{factors['boll_mid']}, LOW:{factors['boll_low']}",
-            f"- KDJ(9,3,3): K:{factors['kdj_k']}, D:{factors['kdj_d']}, J:{factors['kdj_j']}",
             f"- RSI(6): {factors['rsi_6']}",
             f"- RSI(12): {factors['rsi_12']}",
         ]
@@ -164,6 +157,6 @@ def format_kline_markdown(data: dict) -> str:
 @click.argument("code")
 @click.option("--count", default=45, show_default=True, type=click.IntRange(1, 90), help="输出最近N条日K")
 def kline(code: str, count: int):
-    """日K数据以及技术指标（EMA/BOLL/KDJ/RSI）"""
+    """日K数据以及技术指标（EMA/BOLL/RSI）"""
     data = get_kline_data(code, count=count)
     click.echo(format_kline_markdown(data))

@@ -3,6 +3,13 @@ from __future__ import annotations
 INDEX_CODES_AB = ['000001', '399001', '399006']
 
 
+def _parse_price(value: str) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def _parse_zdf(value: str) -> float:
     s = value.replace('%', '').replace('+', '').strip()
     try:
@@ -189,7 +196,191 @@ def _score_limit_ratio(chgdiagram_data: dict, up_down_ratio_score: float) -> tup
     return score, desc, notes
 
 
-def evaluate_market(quotes: list[dict], chgdiagram_data: dict, pt_data: dict) -> dict:
+def _score_ema_trend(quotes: list[dict], klines: list[dict]) -> tuple[float, str]:
+    if not klines:
+        return 0.0, "无K线技术指标数据"
+    scores: list[float] = []
+    details: list[str] = []
+    for quote, kline in zip(quotes, klines, strict=False):
+        if quote.get("code", "") not in INDEX_CODES_AB:
+            continue
+        factors = kline.get("factors", {})
+        if not factors:
+            continue
+        ema5 = float(factors.get("ema_5", 0))
+        ema10 = float(factors.get("ema_10", 0))
+        ema20 = float(factors.get("ema_20", 0))
+        if ema20 == 0:
+            continue
+        price = _parse_price(quote.get("price", "0"))
+        if ema5 > ema10 > ema20:
+            spread_pct = (ema5 - ema20) / ema20 * 100
+            if spread_pct > 2.0:
+                s = 5.0
+                label = "强多头"
+            elif spread_pct > 1.0:
+                s = 4.0
+                label = "多头排列"
+            else:
+                s = 3.5
+                label = "弱多头"
+        elif ema5 > ema10 and ema10 <= ema20:
+            s = 2.0
+            label = "EMA5>EMA10但EMA10≤EMA20"
+        elif abs(ema5 - ema10) / ema20 < 0.01 and abs(ema10 - ema20) / ema20 < 0.01:
+            s = 1.0
+            label = "三线粘合"
+        elif ema5 < ema10 < ema20:
+            s = 0.0
+            label = "空头排列"
+        else:
+            s = 1.5
+            label = "方向不明"
+        scores.append(s)
+        name = quote.get("name", quote.get("code", ""))
+        details.append(f"{name}:{label}")
+    if not scores:
+        return 0.0, "无核心指数技术数据"
+    avg = sum(scores) / len(scores)
+    avg_score = avg / 5.0 * 10.0
+    score = round(max(0.0, min(10.0, avg_score)), 1)
+    detail_str = "；".join(details)
+    if avg >= 4.0:
+        trend_label = "趋势强劲上行"
+    elif avg >= 3.0:
+        trend_label = "趋势偏多"
+    elif avg >= 2.0:
+        trend_label = "趋势偏多但分化"
+    elif avg >= 1.5:
+        trend_label = "趋势方向不明"
+    elif avg >= 1.0:
+        trend_label = "趋势粘合震荡"
+    else:
+        trend_label = "趋势下行"
+    desc = f"EMA趋势：{trend_label}（{detail_str}）"
+    return score, desc
+
+
+def _score_boll_position(quotes: list[dict], klines: list[dict]) -> tuple[float, str]:
+    if not klines:
+        return 0.0, "无K线技术指标数据"
+    scores: list[float] = []
+    details: list[str] = []
+    for quote, kline in zip(quotes, klines, strict=False):
+        if quote.get("code", "") not in INDEX_CODES_AB:
+            continue
+        factors = kline.get("factors", {})
+        if not factors:
+            continue
+        boll_up = float(factors.get("boll_up", 0))
+        boll_mid = float(factors.get("boll_mid", 0))
+        boll_low = float(factors.get("boll_low", 0))
+        if boll_mid == 0:
+            continue
+        price = _parse_price(quote.get("price", "0"))
+        if boll_low == 0 or boll_up == boll_low:
+            s = 3.0
+            label = "BOLL带宽极窄"
+        elif price > boll_up:
+            s = 2.0
+            label = "突破上轨"
+        elif boll_mid < price <= boll_up:
+            s = 3.0
+            label = "中轨上方"
+        elif boll_low < price <= boll_mid:
+            s = 1.0
+            label = "中轨下方"
+        elif price <= boll_low:
+            s = 0.0
+            label = "跌破下轨"
+        else:
+            s = 2.0
+            label = "中轨附近"
+        scores.append(s)
+        name = quote.get("name", quote.get("code", ""))
+        details.append(f"{name}:{label}")
+    if not scores:
+        return 0.0, "无核心指数BOLL数据"
+    avg = sum(scores) / len(scores)
+    avg_score = avg / 3.0 * 10.0
+    score = round(max(0.0, min(10.0, avg_score)), 1)
+    detail_str = "；".join(details)
+    if avg >= 2.8:
+        pos_label = "强势区间"
+    elif avg >= 2.0:
+        pos_label = "偏强区间"
+    elif avg >= 1.3:
+        pos_label = "中性偏弱"
+    else:
+        pos_label = "弱势区间"
+    desc = f"BOLL位置：{pos_label}（{detail_str}）"
+    return score, desc
+
+
+def _score_rsi_momentum(quotes: list[dict], klines: list[dict]) -> tuple[float, str]:
+    if not klines:
+        return 0.0, "无K线技术指标数据"
+    scores: list[float] = []
+    details: list[str] = []
+    for quote, kline in zip(quotes, klines, strict=False):
+        if quote.get("code", "") not in INDEX_CODES_AB:
+            continue
+        factors = kline.get("factors", {})
+        if not factors:
+            continue
+        rsi6 = float(factors.get("rsi_6", 0))
+        rsi12 = float(factors.get("rsi_12", 0))
+        if rsi6 == 0 and rsi12 == 0:
+            continue
+        if rsi6 > rsi12 and 45 <= rsi6 <= 65:
+            s = 2.0
+            label = f"RSI6={rsi6:.1f}>RSI12={rsi12:.1f}健康多头"
+        elif abs(rsi6 - rsi12) < 3 and 30 <= rsi6 <= 70:
+            s = 1.0
+            label = f"RSI6={rsi6:.1f}≈RSI12={rsi12:.1f}中性"
+        elif rsi6 > 75:
+            s = 0.0
+            label = f"RSI6={rsi6:.1f}超买风险"
+        elif rsi6 < 30:
+            s = 0.5
+            label = f"RSI6={rsi6:.1f}极度弱势"
+        elif rsi6 < rsi12:
+            s = 0.5
+            label = f"RSI6={rsi6:.1f}<RSI12={rsi12:.1f}空头动能"
+        else:
+            s = 1.0
+            label = f"RSI6={rsi6:.1f}/RSI12={rsi12:.1f}"
+        scores.append(s)
+        name = quote.get("name", quote.get("code", ""))
+        details.append(f"{name}:{label}")
+    if not scores:
+        return 0.0, "无核心指数RSI数据"
+    avg = sum(scores) / len(scores)
+    avg_score = avg / 2.0 * 10.0
+    score = round(max(0.0, min(10.0, avg_score)), 1)
+    detail_str = "；".join(details)
+    if avg >= 1.8:
+        momentum_label = "动能健康"
+    elif avg >= 1.0:
+        momentum_label = "动能中性"
+    elif avg >= 0.5:
+        momentum_label = "动能偏弱"
+    else:
+        momentum_label = "动能极弱/超买"
+    desc = f"RSI动能：{momentum_label}（{detail_str}）"
+    return score, desc
+
+
+def _score_technical(quotes: list[dict], klines: list[dict]) -> tuple[float, str]:
+    ema_score, ema_desc = _score_ema_trend(quotes, klines)
+    boll_score, boll_desc = _score_boll_position(quotes, klines)
+    rsi_score, rsi_desc = _score_rsi_momentum(quotes, klines)
+    score = round(max(0.0, min(10.0, ema_score * 0.4 + boll_score * 0.3 + rsi_score * 0.3)), 1)
+    desc = f"{ema_desc}；{boll_desc}；{rsi_desc}"
+    return score, desc
+
+
+def evaluate_market(quotes: list[dict], chgdiagram_data: dict, pt_data: dict, klines: list[dict] | None = None) -> dict:
     up_down_score, up_down_desc = _score_up_down_ratio(
         chgdiagram_data.get("up_count", 0),
         chgdiagram_data.get("down_count", 0),
@@ -206,12 +397,14 @@ def evaluate_market(quotes: list[dict], chgdiagram_data: dict, pt_data: dict) ->
     volume_score, volume_desc = _score_volume_change(chgdiagram_data, index_avg)
     sector_score, sector_desc = _score_sector_change(pt_data)
     limit_score, limit_desc, limit_notes = _score_limit_ratio(chgdiagram_data, up_down_score)
+    tech_score, tech_desc = _score_technical(quotes, klines or [])
     total = round(
-        up_down_score * 0.3
-        + index_score * 0.2
-        + volume_score * 0.2
-        + sector_score * 0.2
-        + limit_score * 0.1,
+        up_down_score * 0.20
+        + limit_score * 0.20
+        + sector_score * 0.15
+        + tech_score * 0.15
+        + volume_score * 0.15
+        + index_score * 0.15,
         1,
     )
     if total >= 8:
@@ -231,11 +424,12 @@ def evaluate_market(quotes: list[dict], chgdiagram_data: dict, pt_data: dict) ->
         action = "空仓观望，不开新仓"
     return {
         "dimensions": [
-            {"name": "涨跌比", "weight": "30%", "score": up_down_score, "desc": up_down_desc},
-            {"name": "行业板块", "weight": "20%", "score": sector_score, "desc": sector_desc},
-            {"name": "成交量", "weight": "20%", "score": volume_score, "desc": volume_desc},
-            {"name": "涨跌幅", "weight": "20%", "score": index_score, "desc": index_desc},
-            {"name": "涨跌停比", "weight": "10%", "score": limit_score, "desc": limit_desc, "notes": limit_notes},
+            {"name": "涨跌比", "weight": "20%", "score": up_down_score, "desc": up_down_desc},
+            {"name": "涨跌停比", "weight": "20%", "score": limit_score, "desc": limit_desc, "notes": limit_notes},
+            {"name": "行业板块", "weight": "15%", "score": sector_score, "desc": sector_desc},
+            {"name": "技术指标", "weight": "15%", "score": tech_score, "desc": tech_desc},
+            {"name": "成交量", "weight": "15%", "score": volume_score, "desc": volume_desc},
+            {"name": "涨跌幅", "weight": "15%", "score": index_score, "desc": index_desc},
         ],
         "total": total,
         "status": status,

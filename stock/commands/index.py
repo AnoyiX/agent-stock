@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import click
 
+from stock.commands.kline import get_kline_data
+
 from ..api.qq import (
     fetch_chgdiagram_payload,
     fetch_pt_board_rank_payload,
@@ -30,9 +32,9 @@ CODES = {
 }
 
 
-def format_quotes_markdown(quotes: list[dict]) -> str:
+def format_quotes_markdown(quotes: list[dict], klines: list[list[dict]]) -> str:
     lines = []
-    for quote in quotes:
+    for quote, kline in zip(quotes, klines, strict=False):
         lines.append(
             ",".join(
                 [
@@ -44,6 +46,14 @@ def format_quotes_markdown(quotes: list[dict]) -> str:
                     quote["open"],
                     quote["high"],
                     quote["low"],
+                    str(kline["factors"]["ema_5"]),
+                    str(kline["factors"]["ema_10"]),
+                    str(kline["factors"]["ema_20"]),
+                    str(kline["factors"]["boll_up"]),
+                    str(kline["factors"]["boll_mid"]),
+                    str(kline["factors"]["boll_low"]),
+                    str(kline["factors"]["rsi_6"]),
+                    str(kline["factors"]["rsi_12"]),
                 ]
             )
         )
@@ -52,7 +62,7 @@ def format_quotes_markdown(quotes: list[dict]) -> str:
             "## 指数",
             "",
             "```csv",
-            "代码,名称,价格,涨跌幅,昨收价,开盘价,最高价,最低价",
+            "代码,名称,价格,涨跌幅,昨收价,开盘价,最高价,最低价,EMA5,EMA10,EMA20,BOLL_UP,BOLL_M,BOLL_LOW,RSI6,RSI12",
             *lines,
             "```",
         ]
@@ -229,10 +239,11 @@ def format_pt_rank_table(data: dict) -> str:
 def index(market: str):
     """大盘指数行情"""
     market = market.lower()
-    data = get_stock_by_query(','.join(CODES[market]))
+    quotes = get_stock_by_query(','.join(CODES[market]))
+    klines = [get_kline_data(code, count=30) for code in CODES[market]]
     click.echo(f"# 大盘行情 {get_current_time()}")
     click.echo("")
-    click.echo(format_quotes_markdown(data))
+    click.echo(format_quotes_markdown(quotes, klines))
     if market == "ab":
         click.echo("")
         chgdiagram_data = get_chgdiagram_data()
@@ -241,5 +252,5 @@ def index(market: str):
         pt_data = get_pt_board_rank_list("priceRatio", "down", 0, 30)
         click.echo(format_pt_rank_table(pt_data))
         click.echo("")
-        eval_data = evaluate_market(data, chgdiagram_data, pt_data)
+        eval_data = evaluate_market(quotes, chgdiagram_data, pt_data, klines)
         click.echo(format_evaluation_markdown(eval_data))

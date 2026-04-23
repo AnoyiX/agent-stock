@@ -13,7 +13,7 @@ resolution-markers = [
 
 [[package]]
 name = "agent-stock"
-version = "0.2.4"
+version = "0.2.5"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
