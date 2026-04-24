@@ -12,7 +12,7 @@
 
 ## 2. 逐只持仓深度诊断
 
-参考文档 [references/trade.md](references/trade.md)，对用户持仓中的**每个股票**进行深度分析与决策！
+参考文档 [references/trade.md](references/trade.md)，如果是量化方式，则参考文档 [references/quant.md](references/quant.md)，对用户持仓中的**每个股票**进行深度分析与决策！
 
 ## 3. 结果输出与保存
 

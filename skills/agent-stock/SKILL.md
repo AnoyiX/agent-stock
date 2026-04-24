@@ -2,7 +2,7 @@
 name: agent-stock
 description: AI 量化交易技能包，用于获取股市实时数据、选股、交易决策、持仓分析等。
 author: AnoyiX
-version: "0.2.6"
+version: "0.2.7"
 tags:
   - Stock
   - 股票数据
@@ -21,6 +21,7 @@ tags:
 
 - 短线交易选股：参考文档 [references/screen.md](references/screen.md)，为用户完成选股；
 - 短线交易决策：参考文档 [references/trade.md](references/trade.md)，为用户完成个股交易决策；
+- 短线量化交易决策：参考文档 [references/quant.md](references/quant.md)，为用户完成个股量化交易决策；
 - 用户持仓分析：参考文档 [references/holdings.md](references/holdings.md)，为用户完成持仓分析；
 
 ## Prerequisites

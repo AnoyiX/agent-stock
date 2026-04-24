@@ -125,21 +125,24 @@ def get_kline_data(symbol: str, count: int = 45) -> dict:
     }
 
 
-def format_kline_markdown(data: dict) -> str:
+def format_kline_markdown(data: dict, with_lines: bool = True) -> str:
     lines = data.get("lines", [])
     if not lines:
         raise click.ClickException("暂无日K数据")
     headers = list(lines[0].keys())
     csv_rows = [",".join(str(item[key]) for key in headers) for item in lines]
     factors = data["factors"]
+    csv_block = [
+        "",
+        "```csv",
+        ",".join(headers),
+        *csv_rows,
+        "```",
+    ] if with_lines else []
     return "\n".join(
         [
             "## 日K线",
-            "",
-            "```csv",
-            ",".join(headers),
-            *csv_rows,
-            "```",
+            *csv_block,
             "",
             "**技术指标**",
             "",

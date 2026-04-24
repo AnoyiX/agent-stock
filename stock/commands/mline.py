@@ -36,13 +36,21 @@ def get_mline_data(symbol: str, count: int = 48) -> dict:
     for item in raw_lines:
         if len(item) < 6:
             continue
+        open_p = float(item[1])
+        close_p = float(item[2])
+        high_p = float(item[3])
+        low_p = float(item[4])
         volume = float(item[5])
-        avg_price = (float(item[3]) + float(item[4])) / 2
+        avg_price = (high_p + low_p) / 2
         result.append(
             {
                 "时间": _format_mline_time(item[0]),
+                "开盘": round(open_p, 2),
+                "收盘": round(close_p, 2),
+                "最高": round(high_p, 2),
+                "最低": round(low_p, 2),
                 "均价": round(avg_price, 2),
-                "成交量(手)": round(volume),
+                "成交量": round(volume),
             }
         )
     if not result:

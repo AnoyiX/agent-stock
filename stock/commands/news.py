@@ -36,7 +36,7 @@ def format_news_markdown(news_data: dict) -> str:
     news_list = news_data["news"]
     if not news_list:
         return "##快讯\n\n暂无数据\n"
-    cutoff = datetime.now() - timedelta(days=2)
+    cutoff = datetime.now() - timedelta(days=3)
     lines: list[str] = []
     for item in news_list:
         if not isinstance(item, dict):

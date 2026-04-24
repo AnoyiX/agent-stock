@@ -127,12 +127,6 @@ def get_chgdiagram_data() -> dict:
 
 
 def format_chgdiagram_markdown(data: dict) -> str:
-    detail = data.get("detail", [])
-    lines = [
-        f"{_format_flag(it.get('flag', 0))},{it.get('section', '')},{it.get('count', 0)}"
-        for it in detail
-        if isinstance(it, dict)
-    ]
     amount = data.get("amount", 0)
     amount_change = data.get("amount_change", 0)
     amount_change_label = "放量" if amount_change >= 0 else "缩量"
@@ -152,12 +146,9 @@ def format_chgdiagram_markdown(data: dict) -> str:
             "",
             f"> {data.get('up_ratio_comment', '')}",
             "",
-            f"今日成交额：{_format_amount(amount)}，较昨日{amount_change_label}：{amount_change_value}",
+            "## 成交量",
             "",
-            "```csv",
-            "状态,区间,数量",
-            *lines,
-            "```",
+            f"今日成交额：{_format_amount(amount)}，较昨日{amount_change_label}：{amount_change_value}",
         ]
     )
 

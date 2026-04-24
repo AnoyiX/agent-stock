@@ -22,14 +22,12 @@ python -m pip install -U agent-stock  # 升级
 
 ```bash
 # 市场数据
+stock index
 stock search 腾讯
 stock rank --count 20
 
 # 个股数据
 stock quote 000001
-stock quote 000001,600519
-stock kline 000001
-stock fundflow 000001
 
 # 帮助与版本
 stock --help
@@ -60,9 +58,10 @@ stock rank --sort <sort> --count <count>  # 市场股票排序，sort 默认值 
 
 ```bash
 stock detail <symbol>               # 个股详情，包含股票实时行情、日K数据、技术指标、分时数据、资金流向、相关板块和概念、新闻等
+stock quant <symbol>                # 个股数据实时量化分析结果
 
 # 参数说明：
-# - symbol: 股票代码，支持 A 股，如 600519、000001
+# - symbol: A 股股票代码，如 600519、000001
 ```
 
 ## 🤖 技能
@@ -77,7 +76,7 @@ npx skills add https://github.com/AnoyiX/agent-stock/tree/main/skills/agent-stoc
 
 **【个股决策】**
 
-输入示例： `帮我决策 天孚通信`
+输入示例： `帮我决策中国平安`、`帮我决策000001`、`使用量化方式帮我决策中国平安`
 
 **【AI 选股】**
 
