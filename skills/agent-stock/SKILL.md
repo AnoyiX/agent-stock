@@ -1,14 +1,15 @@
 ---
 name: agent-stock
-description: AI 量化交易技能包，用于获取股市实时数据、选股、交易决策、持仓分析等。
+description: 股市 AI 量化交易，用于获取股市实时数据、选股、交易决策、持仓分析、量化交易决策等。
 author: AnoyiX
-version: "0.2.7"
+version: "0.2.8"
 tags:
   - Stock
   - 股票数据
   - 选股
-  - 交易决策
   - 持仓分析
+  - 交易决策
+  - 量化交易决策
 ---
 
 # Agent Stock

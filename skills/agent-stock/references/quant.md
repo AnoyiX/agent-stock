@@ -12,7 +12,7 @@
 
 ## 2. 个股快速诊断（100分制）
 
-使用 `uv run python -m stock quant <symbol>` 个股实时数据，以及多维评分！
+使用 `stock quant <symbol>` 个股实时数据，以及多维评分！
 
 ## 3. 综合决策
 
